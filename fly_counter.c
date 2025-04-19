@@ -9,7 +9,7 @@
 #define COUNTER_RESET_GPIO_PIN 1
 
 int counter = 0;
-int64_t breakTimeDiff = 0;
+int64_t breakTimeMicroSecs = 0;
 
 //*************************************************************************************************
 
@@ -35,7 +35,7 @@ void gpio_callback(uint gpio, uint32_t events)
             int64_t diff = absolute_time_diff_us(breakTime, unbreakTime);
             if (diff > 0)
             {
-                breakTimeDiff = diff;
+                breakTimeMicroSecs = diff;
             }
         }
     }
@@ -67,29 +67,36 @@ int main()
 
     char buffer[20];
     int prevCounter = -1;
-    int64_t prevBreakTimeDiff = -1;
+    int64_t prevBreakTime = -1;
 
     while (1)
     {
-        if ((counter != prevCounter) || (breakTimeDiff != prevBreakTimeDiff))
+        if (counter != prevCounter)
         {
             lcd_clear();
 
             lcd_set_cursor(0, 0);
             snprintf(buffer, sizeof(buffer), "%d detection(s)", counter);
             lcd_set_string(buffer);
-            printf("Counter is %s\n", buffer);
-
-            lcd_set_cursor(1, 0);
-            snprintf(buffer, sizeof(buffer), "%lli us", breakTimeDiff);
-            lcd_set_string(buffer);
-            printf("Time diff is %s\n", buffer);
-
-            // TDOO: remove
-            //printf("currentTime = %llu\n", currentTime);
+            printf("%s\n", buffer);
 
             prevCounter = counter;
-            prevBreakTimeDiff = breakTimeDiff;
+        }
+
+        if (breakTimeMicroSecs != prevBreakTime)
+        {
+            lcd_set_cursor(1, 0);
+            uint64_t ms = breakTimeMicroSecs / 1000;
+            uint64_t us = breakTimeMicroSecs % 1000;
+            snprintf(buffer, sizeof(buffer), "%llu.%03llu ms", ms, us);
+            lcd_set_string(buffer);
+            printf("%s\n", buffer);
+            
+            // TODO: remove all USB comms?
+            snprintf(buffer, sizeof(buffer), "%lli us", breakTimeMicroSecs);
+            printf("Time diff is %s\n", buffer);
+
+            prevBreakTime = breakTimeMicroSecs;
         }
 
         sleep_ms(100);
