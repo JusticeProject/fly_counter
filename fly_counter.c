@@ -58,11 +58,13 @@ int main()
     gpio_set_dir(IR_BEAM_INPUT_GPIO_PIN, GPIO_IN);
     gpio_pull_up(IR_BEAM_INPUT_GPIO_PIN);
     gpio_set_irq_enabled_with_callback(IR_BEAM_INPUT_GPIO_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, &gpio_callback);
+    // the first GPIO irq is registered with the callback, the next one we register doesn't need to specify the callback since it's the same
 
     gpio_init(COUNTER_RESET_GPIO_PIN);
     gpio_set_dir(COUNTER_RESET_GPIO_PIN, GPIO_IN);
     gpio_pull_up(COUNTER_RESET_GPIO_PIN);
     gpio_set_irq_enabled(COUNTER_RESET_GPIO_PIN, GPIO_IRQ_EDGE_FALL, true);
+
     lcd_init();
 
     char buffer[20];
@@ -81,6 +83,8 @@ int main()
             printf("%s\n", buffer);
 
             prevCounter = counter;
+
+            // TODO: turn on buzzer
         }
 
         if (breakTimeMicroSecs != prevBreakTime)
