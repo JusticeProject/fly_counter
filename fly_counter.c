@@ -86,7 +86,10 @@ int main()
 
             prevCounter = counter;
 
-            // TODO: turn on buzzer for short duration, the pwm files can keep track of the time, can query for it
+            if (counter > 0)
+            {
+                pwm_buzzer_on();
+            }
         }
 
         if (breakTimeMicroSecs != prevBreakTime)
@@ -105,15 +108,12 @@ int main()
             prevBreakTime = breakTimeMicroSecs;
         }
 
-        sleep_ms(100);
-
-        // TODO:
-        if (counter > 5)
+        int64_t on_time = pwm_on_time_ms();
+        if (on_time > 1000)
         {
-            pwm_buzzer_on();
-            sleep_ms(1000);
             pwm_buzzer_off();
-            counter = 0;
         }
+
+        sleep_ms(100);
     }
 }
