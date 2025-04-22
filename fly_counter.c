@@ -2,6 +2,7 @@
 #include <string.h>
 #include "pico/stdlib.h"
 #include "lcd.h"
+#include "pwmBuzzer.h"
 
 //*************************************************************************************************
 
@@ -65,6 +66,7 @@ int main()
     gpio_pull_up(COUNTER_RESET_GPIO_PIN);
     gpio_set_irq_enabled(COUNTER_RESET_GPIO_PIN, GPIO_IRQ_EDGE_FALL, true);
 
+    pwm_buzzer_init();
     lcd_init();
 
     char buffer[20];
@@ -84,7 +86,7 @@ int main()
 
             prevCounter = counter;
 
-            // TODO: turn on buzzer
+            // TODO: turn on buzzer for short duration, the pwm files can keep track of the time, can query for it
         }
 
         if (breakTimeMicroSecs != prevBreakTime)
@@ -104,5 +106,14 @@ int main()
         }
 
         sleep_ms(100);
+
+        // TODO:
+        if (counter > 5)
+        {
+            pwm_buzzer_on();
+            sleep_ms(1000);
+            pwm_buzzer_off();
+            counter = 0;
+        }
     }
 }
