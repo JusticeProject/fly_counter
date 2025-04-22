@@ -77,16 +77,17 @@ int main()
     {
         if (counter != prevCounter)
         {
+            // we will use prevCounter for the rest of this block because counter could change again while we analyze it
+            prevCounter = counter;
+
             lcd_clear();
 
             lcd_set_cursor(0, 0);
-            snprintf(buffer, sizeof(buffer), "%d detection(s)", counter);
+            snprintf(buffer, sizeof(buffer), "%d detection(s)", prevCounter);
             lcd_set_string(buffer);
             printf("%s\n", buffer);
 
-            prevCounter = counter;
-
-            if (counter > 0)
+            if (prevCounter > 0)
             {
                 pwm_buzzer_on();
             }
@@ -94,18 +95,22 @@ int main()
 
         if (breakTimeMicroSecs != prevBreakTime)
         {
+            // We will use prevBreakTime for the rest of this block because breakTimeMicroSecs could change again while we analyze it.
+            // It could have changed between the time we tested it and the time we saved it, but for this project it's not a big deal.
+            // If we really cared about the value we could have the ISR put the value in a queue that the main thread would grab 
+            // (or turn off interrupts temporarily).
+            prevBreakTime = breakTimeMicroSecs;
+
             lcd_set_cursor(1, 0);
-            uint64_t ms = breakTimeMicroSecs / 1000;
-            uint64_t us = breakTimeMicroSecs % 1000;
+            uint64_t ms = prevBreakTime / 1000;
+            uint64_t us = prevBreakTime % 1000;
             snprintf(buffer, sizeof(buffer), "%llu.%03llu ms", ms, us);
             lcd_set_string(buffer);
             printf("%s\n", buffer);
             
             // TODO: remove all USB comms?
-            snprintf(buffer, sizeof(buffer), "%lli us", breakTimeMicroSecs);
+            snprintf(buffer, sizeof(buffer), "%lli us", prevBreakTime);
             printf("Time diff is %s\n", buffer);
-
-            prevBreakTime = breakTimeMicroSecs;
         }
 
         int64_t on_time = pwm_on_time_ms();
