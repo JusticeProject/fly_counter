@@ -45,6 +45,7 @@ void gpio_callback(uint gpio, uint32_t events)
         if (events & GPIO_IRQ_EDGE_FALL)
         {
             counter = 0;
+            breakTimeMicroSecs = 0;
         }
     }
 }
@@ -68,8 +69,9 @@ int main()
 
     pwm_buzzer_init();
     lcd_init();
+    lcd_clear();
 
-    char buffer[20];
+    char buffer[40]; // overkill, but the large size is useful when printing debug messages
     int prevCounter = -1;
     int64_t prevBreakTime = -1;
 
@@ -80,12 +82,10 @@ int main()
             // we will use prevCounter for the rest of this block because counter could change again while we analyze it
             prevCounter = counter;
 
-            lcd_clear();
-
             lcd_set_cursor(0, 0);
-            snprintf(buffer, sizeof(buffer), "%d detection(s)", prevCounter);
+            snprintf(buffer, sizeof(buffer), "%d detection(s)  ", prevCounter);
             lcd_set_string(buffer);
-            printf("%s\n", buffer);
+            //printf("%s\n", buffer);
 
             if (prevCounter > 0)
             {
@@ -104,13 +104,12 @@ int main()
             lcd_set_cursor(1, 0);
             uint64_t ms = prevBreakTime / 1000;
             uint64_t us = prevBreakTime % 1000;
-            snprintf(buffer, sizeof(buffer), "%llu.%03llu ms", ms, us);
+            snprintf(buffer, sizeof(buffer), "%llu.%03llu ms        ", ms, us);
             lcd_set_string(buffer);
-            printf("%s\n", buffer);
+            //printf("%s\n", buffer);
             
-            // TODO: remove all USB comms?
-            snprintf(buffer, sizeof(buffer), "%lli us", prevBreakTime);
-            printf("Time diff is %s\n", buffer);
+            //snprintf(buffer, sizeof(buffer), "%lli us", prevBreakTime);
+            //printf("Time diff is %s\n", buffer);
         }
 
         int64_t on_time = pwm_on_time_ms();

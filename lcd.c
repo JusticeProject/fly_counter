@@ -91,8 +91,17 @@ void lcd_set_cursor(int line, int position)
 
 void lcd_set_string(const char *s)
 {
-    while (*s) {
+    int counter = 0;
+
+    while (*s)
+    {
+        //printf("Writing char %c to lcd\n", *s);
         lcd_char(*s++);
+        counter++;
+        if (counter >= MAX_CHARS)
+        {
+            break;
+        }
     }
 }
 

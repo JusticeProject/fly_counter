@@ -27,26 +27,27 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
-
 project(fly_counter C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
-
-add_executable(fly_counter fly_counter.c lcd.c pwmBuzzer.c)
+add_executable(fly_counter 
+            fly_counter.c 
+            lcd.c 
+            pwmBuzzer.c)
 
 pico_set_program_name(fly_counter "fly_counter")
 pico_set_program_version(fly_counter "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(fly_counter 0)
-pico_enable_stdio_usb(fly_counter 1)
+pico_enable_stdio_usb(fly_counter 0)
 
 # Add the standard library to the build
 target_link_libraries(fly_counter
-        pico_stdlib)
+                    pico_stdlib)
 
 # Add the standard include files to the build
 target_include_directories(fly_counter PRIVATE
@@ -55,9 +56,7 @@ target_include_directories(fly_counter PRIVATE
 
 # Add any user requested libraries
 target_link_libraries(fly_counter 
-        hardware_i2c
-        hardware_pwm
-        )
+                    hardware_i2c
+                    hardware_pwm)
 
 pico_add_extra_outputs(fly_counter)
-
