@@ -1,12 +1,9 @@
-#include "hardware/i2c.h"
 #include "pico/stdlib.h"
 #include "lcd.h"
 
 //*************************************************************************************************
 
-#define I2C_PORT i2c0
-#define I2C_SDA_PIN 4
-#define I2C_SCL_PIN 5
+static i2c_inst_t* i2c_port;
 
 // commands
 const int LCD_CLEARDISPLAY = 0x01;
@@ -58,14 +55,16 @@ void lcd_send_byte(uint8_t val, int mode);
 
 //*************************************************************************************************
 
-void lcd_init()
+void lcd_init(i2c_inst_t* port, uint sda_pin, uint scl_pin)
 {
+    i2c_port = port;
+
     // I2C Initialisation. Using it at 400Khz.
-    i2c_init(I2C_PORT, 400*1000);
-    gpio_set_function(I2C_SDA_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(I2C_SCL_PIN, GPIO_FUNC_I2C);
-    gpio_pull_up(I2C_SDA_PIN);
-    gpio_pull_up(I2C_SCL_PIN);
+    i2c_init(i2c_port, 400*1000);
+    gpio_set_function(sda_pin, GPIO_FUNC_I2C);
+    gpio_set_function(scl_pin, GPIO_FUNC_I2C);
+    gpio_pull_up(sda_pin);
+    gpio_pull_up(scl_pin);
 
     lcd_send_byte(0x03, LCD_COMMAND);
     lcd_send_byte(0x03, LCD_COMMAND);
@@ -131,7 +130,7 @@ void lcd_toggle_enable(uint8_t val)
 /* Quick helper function for single byte transfers */
 void i2c_write_byte(uint8_t val)
 {
-    i2c_write_blocking(I2C_PORT, addr, &val, 1, false);
+    i2c_write_blocking(i2c_port, addr, &val, 1, false);
 }
 
 //*************************************************************************************************

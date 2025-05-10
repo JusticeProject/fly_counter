@@ -3,11 +3,16 @@
 #include "pico/stdlib.h"
 #include "lcd.h"
 #include "pwmBuzzer.h"
+#include "ultrasonic_distance.h"
 
 //*************************************************************************************************
 
 #define IR_BEAM_INPUT_GPIO_PIN 0
 #define COUNTER_RESET_GPIO_PIN 1
+#define I2C_PORT i2c0
+#define I2C_SDA_GPIO_PIN 4
+#define I2C_SCL_GPIO_PIN 5
+#define PWM_BUZZER_GPIO_PIN 15
 
 int counter = 0;
 int64_t breakTimeMicroSecs = 0;
@@ -67,9 +72,10 @@ int main()
     gpio_pull_up(COUNTER_RESET_GPIO_PIN);
     gpio_set_irq_enabled(COUNTER_RESET_GPIO_PIN, GPIO_IRQ_EDGE_FALL, true);
 
-    pwm_buzzer_init();
-    lcd_init();
+    pwm_buzzer_init(PWM_BUZZER_GPIO_PIN);
+    lcd_init(I2C_PORT, I2C_SDA_GPIO_PIN, I2C_SCL_GPIO_PIN);
     lcd_clear();
+    ultrasonic_distance_init();
 
     char buffer[40]; // overkill, but the large size is useful when printing debug messages
     int prevCounter = -1;
