@@ -3,7 +3,6 @@
 #include "pico/stdlib.h"
 #include "lcd.h"
 #include "pwmBuzzer.h"
-#include "ultrasonic_distance.h"
 
 //*************************************************************************************************
 
@@ -75,7 +74,6 @@ int main()
     pwm_buzzer_init(PWM_BUZZER_GPIO_PIN);
     lcd_init(I2C_PORT, I2C_SDA_GPIO_PIN, I2C_SCL_GPIO_PIN);
     lcd_clear();
-    ultrasonic_distance_init();
 
     char buffer[40]; // overkill, but the large size is useful when printing debug messages
     int prevCounter = -1;
