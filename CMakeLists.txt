@@ -34,7 +34,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 add_executable(fly_counter 
-            fly_counter.c 
+            main.c 
             lcd.c 
             pwmBuzzer.c)
 
