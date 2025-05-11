@@ -6,11 +6,19 @@
 
 //*************************************************************************************************
 
+// Connect the IR emitter to 5V (for longer distances).
+// Connect the IR sensor to 3.3V so the I/O levels match the pico.
 #define IR_BEAM_INPUT_GPIO_PIN 0
+
+// (Optional) Connect a momentary push button between GPIO 1 and GND.
 #define COUNTER_RESET_GPIO_PIN 1
+
+// Connect the LCD to 3.3V and GND. The I2C pins are below:
 #define I2C_PORT i2c0
 #define I2C_SDA_GPIO_PIN 4
 #define I2C_SCL_GPIO_PIN 5
+
+// Connect the positive side of the buzzer to GPIO 15. Connect the other side to GND.
 #define PWM_BUZZER_GPIO_PIN 15
 
 int counter = 0;
